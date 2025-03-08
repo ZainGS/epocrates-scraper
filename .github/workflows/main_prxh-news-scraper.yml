@@ -1,4 +1,4 @@
-name: Build and deploy Python project to Azure Function App - prxh-news-scraper
+name: Build and deploy Python project to Azure Function App - prxh-news-scraper 
 
 on:
   push:
@@ -7,14 +7,14 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # Set this to root
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: './package' # Deployment directory
   PYTHON_VERSION: '3.11' # Python version
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read # Required for actions/checkout
+      contents: read
 
     steps:
       - name: Checkout repository
@@ -25,7 +25,7 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Install dependencies in local package directory
+      - name: Install dependencies inside function folder
         run: |
           pip install --upgrade pip
           pip install --target=ScrapeMedicalNews/.python_packages -r requirements.txt
@@ -33,23 +33,22 @@ jobs:
       - name: Create deployment package
         run: |
           mkdir -p package
-          rsync -av --exclude=venv/ --exclude=.git/ --exclude=.github/ --exclude=release.zip --exclude=chromedriver.exe --exclude=.vs/ --exclude=.vscode/ --exclude=epocrates-scraper.sln --exclude=epocrates-scraper.pyproj ./ package/
-          cd package
-          zip -r ../release.zip ./*
+          cp -r ScrapeMedicalNews host.json requirements.txt package/
+          tar -czf release.tar.gz package  # Creates a single deployable archive
         shell: bash
 
-      - name: Upload artifact for deployment job
+      - name: Upload artifact for deployment
         uses: actions/upload-artifact@v4
         with:
           name: python-app
-          path: release.zip
+          path: release.tar.gz
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
     permissions:
-      id-token: write # Required for requesting the JWT
-      contents: read # Required for actions/checkout
+      id-token: write
+      contents: read
 
     steps:
       - name: Download artifact from build job
@@ -57,10 +56,10 @@ jobs:
         with:
           name: python-app
 
-      - name: Unzip artifact for deployment
-        run: unzip release.zip -d .    
+      - name: Unpack artifact for deployment
+        run: tar -xzf release.tar.gz -C .
 
-      - name: Ensure Azure installs dependencies
+      - name: Ensure Azure installs dependencies (just in case)
         run: |
           echo "SCM_DO_BUILD_DURING_DEPLOYMENT=true" > .env
           echo "ENABLE_ORYX_BUILD=True" >> .env
@@ -68,9 +67,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_8DCD45E5C4CD42E3B0F7EBEA619A2197 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_41E6A73B9D5F4ED4A7C82A774117AD25 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_B8DEF63586A94CA1BEAEBD73C06B39AF }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID }}
 
       - name: Deploy to Azure Functions
         uses: Azure/functions-action@v1
@@ -79,4 +78,4 @@ jobs:
           app-name: 'prxh-news-scraper'
           slot-name: 'Production'
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-          enable-oryx-build: true # Forces Azure to install dependencies correctly
+          enable-oryx-build: true
