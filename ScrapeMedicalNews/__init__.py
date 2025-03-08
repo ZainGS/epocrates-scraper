@@ -7,12 +7,9 @@ from selenium.webdriver.support import expected_conditions as EC
 import json
 import logging
 import azure.functions as func
-import shutil;
+import shutil
 
-app = func.FunctionApp()
-
-@app.route(route="ScrapeMedicalNews", auth_level=func.AuthLevel.ANONYMOUS)
-def ScrapeMedicalNews(req: func.HttpRequest) -> func.HttpResponse:
+def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Fetching latest medical news using Selenium...')
 
     options = Options()
@@ -41,17 +38,13 @@ def ScrapeMedicalNews(req: func.HttpRequest) -> func.HttpResponse:
                 link = link_elements[0].get_attribute("href") if link_elements else None
 
                 # Locate the title
-                # Find the title elements within the second div under the link
                 title_elements = item.find_elements(By.XPATH, ".//a[@data-testid='CardItemLink']/div[2]//p")
-
-                # If that didn't work, try finding any visible p inside the a tag (to catch structure variations)
                 if not title_elements:
                     title_elements = item.find_elements(By.CSS_SELECTOR, "a[data-testid='CardItemLink'] p")
 
-                # Extract text if found, otherwise set default
-                title = title_elements[0].text.strip() if title_elements else "No title"
+                title = title_elements[0].text.strip() if title_elements else None
 
-                # Extract description from `div.reactMarkDown p`
+                # Extract description
                 desc_elements = item.find_elements(By.CSS_SELECTOR, "div.reactMarkDown p")
                 description = " ".join([d.text.strip() for d in desc_elements]) if desc_elements else None
 
@@ -68,10 +61,9 @@ def ScrapeMedicalNews(req: func.HttpRequest) -> func.HttpResponse:
                     })
 
             except Exception as e:
-                # logging.error(f"Skipping an item due to error: {str(e)}")
+                logging.error(f"Skipping an item due to error: {str(e)}")
                 continue
 
-        # logging.info(f"Parsed News Data: {articles}")
         return func.HttpResponse(json.dumps(articles[:3], indent=4), mimetype="application/json", status_code=200)
 
     except Exception as e:
