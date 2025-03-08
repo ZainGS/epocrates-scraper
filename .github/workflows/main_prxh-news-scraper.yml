@@ -25,7 +25,7 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Install dependencies (Optional for testing, not needed for Azure)
+      - name: Install dependencies locally (optional)
         run: pip install --upgrade pip && pip install -r requirements.txt
 
       - name: Create deployment package
@@ -57,6 +57,11 @@ jobs:
 
       - name: Unzip artifact for deployment
         run: unzip release.zip -d .    
+
+      - name: Ensure Azure installs dependencies
+        run: |
+          echo "SCM_DO_BUILD_DURING_DEPLOYMENT=true" > .env
+          echo "ENABLE_ORYX_BUILD=True" >> .env
 
       - name: Login to Azure
         uses: azure/login@v2
