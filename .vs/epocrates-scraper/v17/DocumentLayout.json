@@ -1,37 +1,12 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\szain\\source\\repos\\epocrates-scraper\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{322C8D12-8322-4013-9C84-29A6BCD74D80}|epocrates-scraper.pyproj|C:\\Users\\szain\\source\\repos\\epocrates-scraper\\epocrates_scraper.py||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{322C8D12-8322-4013-9C84-29A6BCD74D80}|epocrates-scraper.pyproj|solutionrelative:epocrates_scraper.py||{8B382828-6202-11D1-8870-0000F87579D2}"
-    }
-  ],
+  "Documents": [],
   "DocumentGroupContainers": [
     {
       "Orientation": 1,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": [
-        {
-          "DockedHeight": 200,
-          "SelectedChildIndex": 0,
-          "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "epocrates_scraper.py",
-              "DocumentMoniker": "C:\\Users\\szain\\source\\repos\\epocrates-scraper\\epocrates_scraper.py",
-              "RelativeDocumentMoniker": "epocrates_scraper.py",
-              "ToolTip": "C:\\Users\\szain\\source\\repos\\epocrates-scraper\\epocrates_scraper.py",
-              "RelativeToolTip": "epocrates_scraper.py",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
-              "WhenOpened": "2025-03-07T02:22:38.377Z",
-              "EditorCaption": ""
-            }
-          ]
-        }
-      ]
+      "DocumentGroups": []
     }
   ]
 }
