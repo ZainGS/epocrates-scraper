@@ -25,21 +25,13 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Create and start virtual environment
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install --upgrade pip
-          pip install -r requirements.txt
-
-      # Optional: Run tests here
-      # - name: Run Tests
-      #   run: pytest
+      - name: Install dependencies (Optional for testing, not needed for Azure)
+        run: pip install --upgrade pip && pip install -r requirements.txt
 
       - name: Create deployment package
         run: |
           mkdir -p package
-          rsync -av --exclude=venv/ --exclude=.git/ --exclude=.github/ --exclude=release.zip ./ package/
+          rsync -av --exclude=.git/ --exclude=.github/ --exclude=release.zip ./ package/
           cd package
           zip -r ../release.zip ./*
         shell: bash
