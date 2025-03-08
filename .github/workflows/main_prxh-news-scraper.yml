@@ -25,13 +25,15 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Install dependencies locally (optional)
-        run: pip install --upgrade pip && pip install -r requirements.txt
+      - name: Install dependencies in local package directory
+        run: |
+          pip install --upgrade pip
+          pip install --target=ScrapeMedicalNews/.python_packages -r requirements.txt
 
       - name: Create deployment package
         run: |
           mkdir -p package
-          rsync -av --exclude=.git/ --exclude=.github/ --exclude=release.zip ./ package/
+          rsync -av --exclude=venv/ --exclude=.git/ --exclude=.github/ --exclude=release.zip --exclude=chromedriver.exe --exclude=.vs/ --exclude=.vscode/ --exclude=epocrates-scraper.sln --exclude=epocrates-scraper.pyproj ./ package/
           cd package
           zip -r ../release.zip ./*
         shell: bash
