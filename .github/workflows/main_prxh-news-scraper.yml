@@ -44,6 +44,7 @@ jobs:
           path: release.tar.gz
 
   deploy:
+    if: false # disables azure deploy step
     runs-on: ubuntu-latest
     needs: build
     permissions:
